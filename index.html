@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Surprise 💖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Screen 1 - Intro */
+        #screen1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .intro-content {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            max-width: 600px;
+        }
+
+        .intro-content h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .intro-content p {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Floating hearts */
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            opacity: 0;
+            animation: floatUp 6s ease-in infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 0;
+                transform: translateY(0) rotate(0deg);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+
+        /* Music control */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .music-control.active {
+            display: block;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+
+        /* Screen 2 - Puzzle */
+        #screen2 {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .puzzle-container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .puzzle-container h2 {
+            color: #333;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .puzzle-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .move-counter {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .puzzle-board {
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 1;
+            margin: 0 auto 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .puzzle-piece {
+            background-size: 300% 300%;
+            border-radius: 8px;
+            cursor: move;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .puzzle-piece:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .puzzle-piece.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .success-message {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Screen 3 - Reveal */
+        #screen3 {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .reveal-content {
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .bouquet-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            object-fit: cover;
+        }
+
+        .reveal-content h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 80px;
+            flex-wrap: wrap;
+        }
+
+        .yes-btn, .no-btn {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255,107,157,0.4);
+            transition: all 0.3s ease;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .yes-btn {
+            background: #51cf66;
+            box-shadow: 0 8px 25px rgba(81,207,102,0.4);
+        }
+
+        .yes-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(81,207,102,0.5);
+        }
+
+        .no-btn {
+            position: absolute;
+            transition: all 0.2s ease;
+        }
+
+        .tease-message {
+            position: absolute;
+            font-size: 0.9rem;
+            color: #ff6b9d;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .tease-message.show {
+            opacity: 1;
+        }
+
+        .final-message {
+            display: none;
+            text-align: center;
+        }
+
+        .final-message.show {
+            display: block;
+            animation: zoomIn 0.6s ease;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .final-message h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .final-message p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Burst hearts animation */
+        .burst-heart {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: burst 1s ease-out forwards;
+        }
+
+        @keyframes burst {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(var(--tx), var(--ty)) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5)) scale(0.5);
+            }
+        }
+
+        /* Confetti hearts */
+        .confetti-heart {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .puzzle-board {
+                max-width: 350px;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .yes-btn, .no-btn {
+                padding: 15px 35px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop>
+        <source src="Elifas_Sonaru_-_Date_Night_on_a_Ferris_Wheel.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Control Button -->
+    <button class="music-control" id="musicToggle">🔊</button>
+
+    <!-- Screen 1: Intro -->
+    <div class="screen active" id="screen1">
+        <div class="intro-content">
+            <h1>Hey my Babi Bunny 🐰 I have something for you…</h1>
+            <p>Before your surprise gift, you need to complete a tiny puzzle.</p>
+            <button class="btn" id="startBtn">Start the puzzle 💖</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Puzzle -->
+    <div class="screen" id="screen2">
+        <div class="puzzle-container">
+            <h2>Put the pieces together 🧩</h2>
+            <div class="puzzle-controls">
+                <div class="move-counter">Moves: <span id="moveCount">0</span></div>
+                <button class="reset-btn" id="resetBtn">Reset</button>
+            </div>
+            <div class="puzzle-board">
+                <div class="puzzle-grid" id="puzzleGrid"></div>
+            </div>
+            <div class="success-message" id="successMsg">
+                You did it! Your gift is waiting 🎁
+            </div>
+            <button class="btn" id="revealBtn" style="display: none;">Reveal my surprise</button>
+        </div>
+    </div>
+
+    <!-- Screen 3: Valentine Reveal -->
+    <div class="screen" id="screen3">
+        <div class="reveal-content" id="revealContent">
+            <img src="bouquet.jpg" alt="Your Valentine's Gift" class="bouquet-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div style="display:none; padding: 40px; background: white; border-radius: 20px; margin-bottom: 30px;">
+                <p style="font-size: 4rem;">💐</p>
+                <p style="color: #666;">Bouquet of love for you</p>
+            </div>
+            <h2>Will you be my Valentine? 💘</h2>
+            <div class="button-container" id="buttonContainer">
+                <button class="yes-btn" id="yesBtn">YES</button>
+                <button class="no-btn" id="noBtn">NO</button>
+                <div class="tease-message" id="teaseMsg"></div>
+            </div>
+            <div class="final-message" id="finalMessage">
+                <h2>YAY!! Best decision ever 💖</h2>
+                <p style="font-size: 1.3rem; margin-bottom: 10px;">You're officially my Valentine.</p>
+                <p style="font-size: 1.1rem; color: #888;">Your gift: Something special awaits this late March 😉 💝</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Music control
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        let isMusicPlaying = false;
+
+        musicToggle.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicToggle.textContent = '🔇';
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play().catch(e => console.log('Audio play failed:', e));
+                musicToggle.textContent = '🔊';
+                isMusicPlaying = true;
+            }
+        });
+
+        // Start button
+        document.getElementById('startBtn').addEventListener('click', () => {
+            showScreen('screen2');
+            bgMusic.volume = 0.4;
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicToggle.classList.add('active');
+                musicToggle.textContent = '🔊';
+            }).catch(e => {
+                console.log('Autoplay prevented:', e);
+                musicToggle.classList.add('active');
+            });
+        });
+
+        // Floating hearts
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '💖';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 5 + 's';
+            heart.style.fontSize = (20 + Math.random() * 20) + 'px';
+            document.getElementById('screen1').appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 6000);
+        }
+
+        setInterval(createFloatingHeart, 800);
+
+        // Screen management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Puzzle logic
+        const IMAGE_URL = 'us.jpg';
+        let moves = 0;
+        let pieces = [];
+        let draggedPiece = null;
+
+        function initPuzzle() {
+            const grid = document.getElementById('puzzleGrid');
+            grid.innerHTML = '';
+            pieces = [];
+            moves = 0;
+            document.getElementById('moveCount').textContent = moves;
+            document.getElementById('successMsg').classList.remove('show');
+            document.getElementById('revealBtn').style.display = 'none';
+
+            // Create ordered pieces
+            for (let i = 0; i < 9; i++) {
+                pieces.push(i);
+            }
+
+            // Shuffle
+            shuffleArray(pieces);
+
+            // Create puzzle pieces
+            pieces.forEach((pieceNum, index) => {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.draggable = true;
+                piece.dataset.position = index;
+                piece.dataset.correct = pieceNum;
+
+                const row = Math.floor(pieceNum / 3);
+                const col = pieceNum % 3;
+                
+                piece.style.backgroundImage = `url(${IMAGE_URL})`;
+                piece.style.backgroundPosition = `${-col * 100}% ${-row * 100}%`;
+
+                piece.addEventListener('dragstart', handleDragStart);
+                piece.addEventListener('dragover', handleDragOver);
+                piece.addEventListener('drop', handleDrop);
+                piece.addEventListener('dragend', handleDragEnd);
+
+                // Touch support
+                piece.addEventListener('touchstart', handleTouchStart, {passive: false});
+                piece.addEventListener('touchmove', handleTouchMove, {passive: false});
+                piece.addEventListener('touchend', handleTouchEnd);
+
+                grid.appendChild(piece);
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function handleDragStart(e) {
+            draggedPiece = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (draggedPiece !== this) {
+                swapPieces(draggedPiece, this);
+                moves++;
+                document.getElementById('moveCount').textContent = moves;
+                checkSolution();
+            }
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+        }
+
+        // Touch support
+        let touchStartPiece = null;
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            touchStartPiece = this;
+            this.classList.add('dragging');
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            this.classList.remove('dragging');
+            
+            const touch = e.changedTouches[0];
+            const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (elementAtTouch && elementAtTouch.classList.contains('puzzle-piece') && elementAtTouch !== touchStartPiece) {
+                swapPieces(touchStartPiece, elementAtTouch);
+                moves++;
+                document.getElementById('moveCount').textContent = moves;
+                checkSolution();
+            }
+        }
+
+        function swapPieces(piece1, piece2) {
+            const temp = piece1.style.backgroundPosition;
+            piece1.style.backgroundPosition = piece2.style.backgroundPosition;
+            piece2.style.backgroundPosition = temp;
+
+            const tempCorrect = piece1.dataset.correct;
+            piece1.dataset.correct = piece2.dataset.correct;
+            piece2.dataset.correct = tempCorrect;
+        }
+
+        function checkSolution() {
+            const allPieces = document.querySelectorAll('.puzzle-piece');
+            let solved = true;
+
+            allPieces.forEach(piece => {
+                if (parseInt(piece.dataset.position) !== parseInt(piece.dataset.correct)) {
+                    solved = false;
+                }
+            });
+
+            if (solved) {
+                setTimeout(() => {
+                    document.getElementById('successMsg').classList.add('show');
+                    document.getElementById('revealBtn').style.display = 'block';
+                    createConfetti();
+                }, 300);
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'confetti-heart';
+                    heart.textContent = ['💖', '💕', '💗', '💓'][Math.floor(Math.random() * 4)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = '-50px';
+                    heart.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.getElementById('screen2').appendChild(heart);
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        document.getElementById('resetBtn').addEventListener('click', initPuzzle);
+        document.getElementById('revealBtn').addEventListener('click', () => showScreen('screen3'));
+
+        // Screen 3: Valentine logic
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const teaseMsg = document.getElementById('teaseMsg');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const finalMessage = document.getElementById('finalMessage');
+        const revealContent = document.getElementById('revealContent');
+
+        let noAttempts = 0;
+        let yesClicks = 0;
+        const yesMessages = ["Please? 🥺", "Just say yes", "Be mine 💘", "Come on…"];
+        const noMessages = [
+            "Hmm… try again 😌",
+            "Are you sure??",
+            "That seems illegal",
+            "Nope."
+        ];
+
+        // NO button dodge
+        noBtn.addEventListener('mouseenter', dodgeButton);
+        noBtn.addEventListener('click', dodgeButton);
+        noBtn.addEventListener('touchstart', dodgeButton);
+
+        function dodgeButton(e) {
+            e.preventDefault();
+            noAttempts++;
+
+            const container = buttonContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            const maxX = container.width - btnRect.width - 40;
+            const maxY = container.height - btnRect.height - 40;
+            
+            const randomX = Math.random() * maxX - maxX/2;
+            const randomY = Math.random() * maxY - maxY/2;
+            
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${Math.random() * 360}deg) scale(${Math.max(0.3, 1 - noAttempts * 0.1)})`;
+            
+            const message = noMessages[Math.min(noAttempts - 1, noMessages.length - 1)];
+            teaseMsg.textContent = message;
+            teaseMsg.classList.add('show');
+            
+            setTimeout(() => teaseMsg.classList.remove('show'), 1500);
+        }
+
+        // YES button
+        yesBtn.addEventListener('click', () => {
+            yesClicks++;
+
+            if (yesClicks < 5) {
+                yesBtn.textContent = yesMessages[yesClicks - 1];
+                yesBtn.style.transform = 'scale(1.1)';
+                setTimeout(() => yesBtn.style.transform = 'scale(1)', 200);
+            } else {
+                // Accepted!
+                buttonContainer.style.display = 'none';
+                finalMessage.classList.add('show');
+                createHeartBurst();
+            }
+        });
+
+        function createHeartBurst() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'burst-heart';
+                    heart.textContent = ['💖', '💕', '💗', '💓', '❤️'][Math.floor(Math.random() * 5)];
+                    
+                    const angle = (Math.PI * 2 * i) / 20;
+                    const distance = 100 + Math.random() * 100;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+                    
+                    heart.style.setProperty('--tx', tx + 'px');
+                    heart.style.setProperty('--ty', ty + 'px');
+                    heart.style.left = centerX + 'px';
+                    heart.style.top = centerY + 'px';
+                    
+                    revealContent.appendChild(heart);
+                    setTimeout(() => heart.remove(), 1000);
+                }, i * 50);
+            }
+        }
+
+        // Initialize puzzle on load
+        window.addEventListener('load', initPuzzle);
+    </script>
+</body>
+</html>
