@@ -139,12 +139,14 @@
         /* Screen 2 - Puzzle */
         #screen2 {
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            overflow-y: auto;
         }
 
         .puzzle-container {
             text-align: center;
-            max-width: 600px;
+            max-width: 900px;
             width: 100%;
+            padding: 20px;
         }
 
         .puzzle-container h2 {
@@ -187,14 +189,22 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
-        .puzzle-board {
+        .puzzle-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .puzzle-frame {
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             aspect-ratio: 1;
-            margin: 0 auto 30px;
             background: white;
             border-radius: 15px;
-            padding: 10px;
+            padding: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             position: relative;
         }
@@ -203,23 +213,56 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
+            gap: 3px;
             width: 100%;
             height: 100%;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .puzzle-slot {
+            background: #f5f5f5;
+            position: relative;
+            border: 2px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .puzzle-slot.filled {
+            border: none;
+        }
+
+        .puzzle-slot.drag-over {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .pieces-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            max-width: 450px;
         }
 
         .puzzle-piece {
+            width: 100px;
+            height: 100px;
             background-size: 300% 300%;
-            border-radius: 8px;
             cursor: move;
             transition: all 0.3s ease;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
         .puzzle-piece:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
             z-index: 10;
         }
 
@@ -227,6 +270,26 @@
             opacity: 0.5;
             cursor: grabbing;
         }
+
+        .puzzle-piece.placed {
+            cursor: default;
+            filter: none;
+        }
+
+        .puzzle-piece.placed:hover {
+            transform: none;
+        }
+
+        /* Jigsaw piece shapes using clip-path */
+        .piece-0 { clip-path: path('M 0,0 L 100,0 L 100,40 Q 90,30 80,40 L 80,100 L 40,100 Q 50,90 40,80 L 0,80 Z'); }
+        .piece-1 { clip-path: path('M 0,0 L 100,0 L 100,40 Q 90,30 80,40 L 80,100 L 20,100 Q 30,90 20,80 L 0,80 L 0,40 Q 10,50 20,40 Z'); }
+        .piece-2 { clip-path: path('M 0,0 L 100,0 L 100,80 L 60,80 Q 70,90 60,100 L 0,100 L 0,40 Q 10,50 20,40 Z'); }
+        .piece-3 { clip-path: path('M 0,0 L 60,0 Q 50,10 60,20 L 60,60 Q 50,70 60,80 L 0,80 Z M 100,0 L 100,80 L 80,80 Q 90,70 80,60 L 80,20 Q 90,30 80,40 L 60,40 Q 70,50 60,60 L 60,0 Z'); }
+        .piece-4 { clip-path: path('M 0,0 L 40,0 Q 50,10 40,20 L 40,80 Q 50,70 40,60 L 0,60 Z M 60,0 L 100,0 L 100,60 Q 90,70 100,80 L 60,80 Q 70,70 60,60 L 60,40 Q 70,30 60,20 Z'); }
+        .piece-5 { clip-path: path('M 0,0 L 40,0 Q 50,10 40,20 L 40,100 L 0,100 Z M 60,0 L 100,0 L 100,100 L 60,100 L 60,80 Q 70,70 60,60 L 60,20 Q 70,30 60,40 Z'); }
+        .piece-6 { clip-path: path('M 0,0 L 100,0 L 100,20 Q 90,30 100,40 L 100,100 L 40,100 Q 50,90 40,80 L 0,80 Z'); }
+        .piece-7 { clip-path: path('M 0,0 L 100,0 L 100,20 Q 90,30 100,40 L 100,100 L 20,100 Q 30,90 20,80 L 0,80 Z'); }
+        .piece-8 { clip-path: path('M 0,0 L 60,0 Q 70,10 60,20 L 60,100 L 0,100 Z M 80,0 L 100,0 L 100,100 L 80,100 L 80,60 Q 70,50 80,40 Z'); }
 
         .success-message {
             color: #333;
@@ -241,6 +304,12 @@
         .success-message.show {
             opacity: 1;
             transform: scale(1);
+        }
+
+        /* FIX 1: Center the reveal button */
+        #revealBtn {
+            display: none;
+            margin: 0 auto;
         }
 
         /* Screen 3 - Reveal */
@@ -270,14 +339,17 @@
             margin-bottom: 30px;
         }
 
+        /* FIX 2: Buttons side by side in the middle */
         .button-container {
             display: flex;
             gap: 20px;
             justify-content: center;
             align-items: center;
             position: relative;
-            min-height: 80px;
-            flex-wrap: wrap;
+            min-height: 100px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .yes-btn, .no-btn {
@@ -291,17 +363,16 @@
             box-shadow: 0 8px 25px rgba(255,107,157,0.4);
             transition: all 0.3s ease;
             font-weight: 700;
-            position: relative;
         }
 
         .yes-btn {
             background: #51cf66;
             box-shadow: 0 8px 25px rgba(81,207,102,0.4);
+            position: relative;
         }
 
-        .yes-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(81,207,102,0.5);
+        .yes-btn:active {
+            transform: scale(0.95);
         }
 
         .no-btn {
@@ -311,12 +382,16 @@
 
         .tease-message {
             position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 0.9rem;
             color: #ff6b9d;
             font-weight: 600;
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
+            white-space: nowrap;
         }
 
         .tease-message.show {
@@ -397,13 +472,22 @@
             }
         }
 
-        @media (max-width: 600px) {
-            .puzzle-board {
-                max-width: 350px;
-            }
-            
-            .button-container {
+        @media (max-width: 768px) {
+            .puzzle-area {
                 flex-direction: column;
+            }
+
+            .puzzle-frame {
+                max-width: 300px;
+            }
+
+            .pieces-container {
+                max-width: 100%;
+            }
+
+            .puzzle-piece {
+                width: 80px;
+                height: 80px;
             }
             
             .yes-btn, .no-btn {
@@ -434,18 +518,21 @@
     <!-- Screen 2: Puzzle -->
     <div class="screen" id="screen2">
         <div class="puzzle-container">
-            <h2>Put the pieces together 🧩</h2>
+            <h2>Drag the pieces into the frame 🧩</h2>
             <div class="puzzle-controls">
                 <div class="move-counter">Moves: <span id="moveCount">0</span></div>
                 <button class="reset-btn" id="resetBtn">Reset</button>
             </div>
-            <div class="puzzle-board">
-                <div class="puzzle-grid" id="puzzleGrid"></div>
+            <div class="puzzle-area">
+                <div class="puzzle-frame">
+                    <div class="puzzle-grid" id="puzzleGrid"></div>
+                </div>
+                <div class="pieces-container" id="piecesContainer"></div>
             </div>
             <div class="success-message" id="successMsg">
                 You did it! Your gift is waiting 🎁
             </div>
-            <button class="btn" id="revealBtn" style="display: none;">Reveal my surprise</button>
+            <button class="btn" id="revealBtn">Reveal my surprise</button>
         </div>
     </div>
 
@@ -527,32 +614,46 @@
         // Puzzle logic
         const IMAGE_URL = 'us.jpg';
         let moves = 0;
-        let pieces = [];
         let draggedPiece = null;
+        let puzzleState = Array(9).fill(null);
 
         function initPuzzle() {
             const grid = document.getElementById('puzzleGrid');
+            const container = document.getElementById('piecesContainer');
+            
             grid.innerHTML = '';
-            pieces = [];
+            container.innerHTML = '';
+            puzzleState = Array(9).fill(null);
             moves = 0;
             document.getElementById('moveCount').textContent = moves;
             document.getElementById('successMsg').classList.remove('show');
             document.getElementById('revealBtn').style.display = 'none';
 
-            // Create ordered pieces
+            // Create empty slots in grid
             for (let i = 0; i < 9; i++) {
-                pieces.push(i);
+                const slot = document.createElement('div');
+                slot.className = 'puzzle-slot';
+                slot.dataset.position = i;
+                
+                slot.addEventListener('dragover', handleSlotDragOver);
+                slot.addEventListener('dragleave', handleSlotDragLeave);
+                slot.addEventListener('drop', handleSlotDrop);
+                
+                // Touch support
+                slot.addEventListener('touchmove', handleSlotTouchMove, {passive: false});
+                slot.addEventListener('touchend', handleSlotTouchEnd);
+                
+                grid.appendChild(slot);
             }
 
-            // Shuffle
-            shuffleArray(pieces);
+            // Create shuffled pieces
+            let pieceOrder = Array.from({length: 9}, (_, i) => i);
+            shuffleArray(pieceOrder);
 
-            // Create puzzle pieces
-            pieces.forEach((pieceNum, index) => {
+            pieceOrder.forEach((pieceNum, index) => {
                 const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
+                piece.className = `puzzle-piece piece-${pieceNum}`;
                 piece.draggable = true;
-                piece.dataset.position = index;
                 piece.dataset.correct = pieceNum;
 
                 const row = Math.floor(pieceNum / 3);
@@ -561,17 +662,15 @@
                 piece.style.backgroundImage = `url(${IMAGE_URL})`;
                 piece.style.backgroundPosition = `${-col * 100}% ${-row * 100}%`;
 
-                piece.addEventListener('dragstart', handleDragStart);
-                piece.addEventListener('dragover', handleDragOver);
-                piece.addEventListener('drop', handleDrop);
-                piece.addEventListener('dragend', handleDragEnd);
+                piece.addEventListener('dragstart', handlePieceDragStart);
+                piece.addEventListener('dragend', handlePieceDragEnd);
 
                 // Touch support
-                piece.addEventListener('touchstart', handleTouchStart, {passive: false});
-                piece.addEventListener('touchmove', handleTouchMove, {passive: false});
-                piece.addEventListener('touchend', handleTouchEnd);
+                piece.addEventListener('touchstart', handlePieceTouchStart, {passive: false});
+                piece.addEventListener('touchmove', handlePieceTouchMove, {passive: false});
+                piece.addEventListener('touchend', handlePieceTouchEnd);
 
-                grid.appendChild(piece);
+                container.appendChild(piece);
             });
         }
 
@@ -582,78 +681,140 @@
             }
         }
 
-        function handleDragStart(e) {
+        function handlePieceDragStart(e) {
+            if (this.classList.contains('placed')) return;
             draggedPiece = this;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         }
 
-        function handleDragOver(e) {
+        function handlePieceDragEnd() {
+            this.classList.remove('dragging');
+        }
+
+        function handleSlotDragOver(e) {
             e.preventDefault();
+            if (!this.classList.contains('filled')) {
+                this.classList.add('drag-over');
+            }
             e.dataTransfer.dropEffect = 'move';
         }
 
-        function handleDrop(e) {
+        function handleSlotDragLeave() {
+            this.classList.remove('drag-over');
+        }
+
+        function handleSlotDrop(e) {
             e.preventDefault();
-            if (draggedPiece !== this) {
-                swapPieces(draggedPiece, this);
-                moves++;
-                document.getElementById('moveCount').textContent = moves;
-                checkSolution();
+            this.classList.remove('drag-over');
+            
+            if (!this.classList.contains('filled') && draggedPiece) {
+                placePieceInSlot(draggedPiece, this);
             }
         }
 
-        function handleDragEnd() {
-            this.classList.remove('dragging');
+        function placePieceInSlot(piece, slot) {
+            const position = parseInt(slot.dataset.position);
+            const correctPosition = parseInt(piece.dataset.correct);
+
+            // Remove piece from container
+            piece.remove();
+
+            // Create a new piece in the slot
+            const placedPiece = document.createElement('div');
+            placedPiece.className = `puzzle-piece piece-${correctPosition} placed`;
+            placedPiece.dataset.correct = correctPosition;
+            placedPiece.style.backgroundImage = piece.style.backgroundImage;
+            placedPiece.style.backgroundPosition = piece.style.backgroundPosition;
+            placedPiece.style.width = '100%';
+            placedPiece.style.height = '100%';
+            placedPiece.style.position = 'absolute';
+            placedPiece.style.top = '0';
+            placedPiece.style.left = '0';
+            placedPiece.style.clipPath = 'none';
+            placedPiece.style.filter = 'none';
+
+            slot.appendChild(placedPiece);
+            slot.classList.add('filled');
+
+            puzzleState[position] = correctPosition;
+            moves++;
+            document.getElementById('moveCount').textContent = moves;
+
+            checkSolution();
         }
 
         // Touch support
         let touchStartPiece = null;
+        let touchClone = null;
 
-        function handleTouchStart(e) {
+        function handlePieceTouchStart(e) {
+            if (this.classList.contains('placed')) return;
             e.preventDefault();
             touchStartPiece = this;
             this.classList.add('dragging');
+
+            // Create a clone for visual feedback
+            touchClone = this.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '1000';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.opacity = '0.8';
+            document.body.appendChild(touchClone);
+
+            const touch = e.touches[0];
+            touchClone.style.left = (touch.clientX - 50) + 'px';
+            touchClone.style.top = (touch.clientY - 50) + 'px';
         }
 
-        function handleTouchMove(e) {
+        function handlePieceTouchMove(e) {
             e.preventDefault();
+            if (!touchClone) return;
+
+            const touch = e.touches[0];
+            touchClone.style.left = (touch.clientX - 50) + 'px';
+            touchClone.style.top = (touch.clientY - 50) + 'px';
         }
 
-        function handleTouchEnd(e) {
+        function handlePieceTouchEnd(e) {
             e.preventDefault();
-            this.classList.remove('dragging');
-            
+            if (touchStartPiece) {
+                touchStartPiece.classList.remove('dragging');
+            }
+
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+
             const touch = e.changedTouches[0];
             const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
             
-            if (elementAtTouch && elementAtTouch.classList.contains('puzzle-piece') && elementAtTouch !== touchStartPiece) {
-                swapPieces(touchStartPiece, elementAtTouch);
-                moves++;
-                document.getElementById('moveCount').textContent = moves;
-                checkSolution();
+            if (elementAtTouch && elementAtTouch.classList.contains('puzzle-slot') && 
+                !elementAtTouch.classList.contains('filled') && touchStartPiece) {
+                placePieceInSlot(touchStartPiece, elementAtTouch);
             }
+
+            touchStartPiece = null;
         }
 
-        function swapPieces(piece1, piece2) {
-            const temp = piece1.style.backgroundPosition;
-            piece1.style.backgroundPosition = piece2.style.backgroundPosition;
-            piece2.style.backgroundPosition = temp;
+        function handleSlotTouchMove(e) {
+            e.preventDefault();
+        }
 
-            const tempCorrect = piece1.dataset.correct;
-            piece1.dataset.correct = piece2.dataset.correct;
-            piece2.dataset.correct = tempCorrect;
+        function handleSlotTouchEnd(e) {
+            e.preventDefault();
         }
 
         function checkSolution() {
-            const allPieces = document.querySelectorAll('.puzzle-piece');
             let solved = true;
 
-            allPieces.forEach(piece => {
-                if (parseInt(piece.dataset.position) !== parseInt(piece.dataset.correct)) {
+            for (let i = 0; i < 9; i++) {
+                if (puzzleState[i] !== i) {
                     solved = false;
+                    break;
                 }
-            });
+            }
 
             if (solved) {
                 setTimeout(() => {
@@ -682,7 +843,7 @@
         document.getElementById('resetBtn').addEventListener('click', initPuzzle);
         document.getElementById('revealBtn').addEventListener('click', () => showScreen('screen3'));
 
-        // Screen 3: Valentine logic
+        // FIX 3: Screen 3 Valentine logic - YES button changes on NO click
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const teaseMsg = document.getElementById('teaseMsg');
@@ -691,8 +852,7 @@
         const revealContent = document.getElementById('revealContent');
 
         let noAttempts = 0;
-        let yesClicks = 0;
-        const yesMessages = ["Please? 🥺", "Just say yes", "Be mine 💘", "Come on…"];
+        const yesMessages = ["YES", "Please? 🥺", "Just say yes", "Be mine 💘", "Come on…"];
         const noMessages = [
             "Hmm… try again 😌",
             "Are you sure??",
@@ -700,14 +860,17 @@
             "Nope."
         ];
 
-        // NO button dodge
-        noBtn.addEventListener('mouseenter', dodgeButton);
+        // NO button click - moves button and changes YES text
         noBtn.addEventListener('click', dodgeButton);
         noBtn.addEventListener('touchstart', dodgeButton);
 
         function dodgeButton(e) {
             e.preventDefault();
             noAttempts++;
+
+            // Change YES button text
+            const yesIndex = Math.min(noAttempts, yesMessages.length - 1);
+            yesBtn.textContent = yesMessages[yesIndex];
 
             const container = buttonContainer.getBoundingClientRect();
             const btnRect = noBtn.getBoundingClientRect();
@@ -727,20 +890,12 @@
             setTimeout(() => teaseMsg.classList.remove('show'), 1500);
         }
 
-        // YES button
+        // YES button - only one click needed
         yesBtn.addEventListener('click', () => {
-            yesClicks++;
-
-            if (yesClicks < 5) {
-                yesBtn.textContent = yesMessages[yesClicks - 1];
-                yesBtn.style.transform = 'scale(1.1)';
-                setTimeout(() => yesBtn.style.transform = 'scale(1)', 200);
-            } else {
-                // Accepted!
-                buttonContainer.style.display = 'none';
-                finalMessage.classList.add('show');
-                createHeartBurst();
-            }
+            // Accepted!
+            buttonContainer.style.display = 'none';
+            finalMessage.classList.add('show');
+            createHeartBurst();
         });
 
         function createHeartBurst() {
