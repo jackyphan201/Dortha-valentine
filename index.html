@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Valentine's Surprise 💖</title>
     <style>
         * {
@@ -16,11 +16,13 @@
             overflow-x: hidden;
             position: relative;
             min-height: 100vh;
+            width: 100vw;
         }
 
         .screen {
             display: none;
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             padding: 20px;
             position: relative;
             overflow: hidden;
@@ -48,17 +50,19 @@
             text-align: center;
             color: white;
             z-index: 10;
-            max-width: 600px;
+            max-width: 90%;
+            padding: 0 20px;
         }
 
         .intro-content h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
             margin-bottom: 1.5rem;
             text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            line-height: 1.3;
         }
 
         .intro-content p {
-            font-size: clamp(1rem, 3vw, 1.3rem);
+            font-size: clamp(1rem, 4vw, 1.3rem);
             margin-bottom: 2.5rem;
             opacity: 0.95;
         }
@@ -76,13 +80,8 @@
             font-weight: 600;
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-        }
-
         .btn:active {
-            transform: translateY(-1px);
+            transform: scale(0.95);
         }
 
         /* Floating hearts */
@@ -132,79 +131,84 @@
             display: block;
         }
 
-        .music-control:hover {
-            transform: scale(1.1);
+        .music-control:active {
+            transform: scale(0.9);
         }
 
         /* Screen 2 - Puzzle */
         #screen2 {
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             overflow-y: auto;
+            padding: 10px;
         }
 
         .puzzle-container {
             text-align: center;
-            max-width: 900px;
+            max-width: 100%;
             width: 100%;
-            padding: 20px;
+            padding: 10px;
         }
 
         .puzzle-container h2 {
             color: #333;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            margin-bottom: 1.5rem;
+            font-size: clamp(1.3rem, 5vw, 2rem);
+            margin-bottom: 1rem;
         }
 
         .puzzle-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
+            margin-bottom: 15px;
+            gap: 10px;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .move-counter {
             background: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 25px;
             font-weight: 600;
             color: #333;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
         }
 
         .reset-btn {
             background: #ff6b6b;
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        .reset-btn:active {
+            transform: scale(0.95);
         }
 
         .puzzle-area {
             display: flex;
-            gap: 30px;
+            flex-direction: column;
+            gap: 20px;
             justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .puzzle-frame {
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             aspect-ratio: 1;
             background: white;
             border-radius: 15px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             position: relative;
         }
@@ -240,20 +244,19 @@
         .pieces-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             justify-content: center;
             align-items: center;
-            min-height: 250px;
-            padding: 20px;
+            padding: 15px;
             background: rgba(255,255,255,0.5);
             border-radius: 15px;
-            max-width: 450px;
+            max-width: 350px;
+            width: 100%;
         }
 
-        /* FIX 1: Square puzzle pieces */
         .puzzle-piece {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             background-size: 300% 300%;
             cursor: move;
             transition: all 0.3s ease;
@@ -262,15 +265,14 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
-        .puzzle-piece:hover {
-            transform: scale(1.1) rotate(5deg);
+        .puzzle-piece:active {
+            transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(0,0,0,0.4);
             z-index: 10;
         }
 
         .puzzle-piece.dragging {
             opacity: 0.5;
-            cursor: grabbing;
         }
 
         .puzzle-piece.placed {
@@ -278,14 +280,10 @@
             box-shadow: none;
         }
 
-        .puzzle-piece.placed:hover {
-            transform: none;
-        }
-
         .success-message {
             color: #333;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             font-weight: 600;
             opacity: 0;
             transform: scale(0);
@@ -309,53 +307,61 @@
 
         .reveal-content {
             text-align: center;
-            max-width: 600px;
+            max-width: 90%;
             position: relative;
+            padding: 0 20px;
         }
 
         .bouquet-image {
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             height: auto;
             border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
             margin-bottom: 30px;
-            object-fit: cover;
+            object-fit: contain;
+            /* FIX: Remove black background from PNG */
+            background: transparent;
         }
 
         .reveal-content h2 {
-            font-size: clamp(2rem, 5vw, 3rem);
+            font-size: clamp(1.8rem, 6vw, 3rem);
             color: #333;
             margin-bottom: 30px;
+            line-height: 1.3;
         }
 
-        /* FIX 2: YES and NO buttons properly aligned */
+        /* FIX: Properly spaced buttons */
         .button-container {
             display: flex;
-            gap: 20px;
+            flex-direction: row;
+            gap: 15px;
             justify-content: center;
             align-items: center;
             position: relative;
-            min-height: 150px;
+            min-height: 200px;
             width: 100%;
+            max-width: 350px;
             margin: 0 auto;
         }
 
         .yes-btn, .no-btn {
             color: white;
             border: none;
-            padding: 18px 45px;
-            font-size: 1.3rem;
+            padding: 16px 40px;
+            font-size: 1.2rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 700;
-            min-width: 120px;
+            min-width: 130px;
+            flex-shrink: 0;
         }
 
         .yes-btn {
             background: #51cf66;
             box-shadow: 0 8px 25px rgba(81,207,102,0.4);
+            position: relative;
+            order: 2;
         }
 
         .yes-btn:active {
@@ -366,16 +372,17 @@
             background: #ff6b9d;
             box-shadow: 0 8px 25px rgba(255,107,157,0.4);
             position: absolute;
-            left: 50%;
-            transform: translateX(calc(-100% - 10px));
+            left: 0;
+            order: 1;
+            transition: all 0.2s ease;
         }
 
         .tease-message {
             position: absolute;
-            top: -40px;
+            top: -50px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #ff6b9d;
             font-weight: 600;
             opacity: 0;
@@ -410,14 +417,16 @@
         }
 
         .final-message h2 {
-            font-size: clamp(2rem, 5vw, 3rem);
+            font-size: clamp(1.8rem, 6vw, 3rem);
             color: #333;
             margin-bottom: 20px;
+            line-height: 1.3;
         }
 
         .final-message p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #666;
+            line-height: 1.5;
         }
 
         /* Burst hearts animation */
@@ -462,28 +471,54 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .puzzle-area {
-                flex-direction: column;
+        /* iPhone 15 Pro Max specific optimizations */
+        @media (max-width: 430px) {
+            .intro-content h1 {
+                font-size: 1.8rem;
             }
 
             .puzzle-frame {
-                max-width: 300px;
+                max-width: 320px;
             }
 
             .pieces-container {
-                max-width: 100%;
+                max-width: 320px;
             }
 
             .puzzle-piece {
-                width: 80px;
-                height: 80px;
+                width: 85px;
+                height: 85px;
             }
-            
+
             .yes-btn, .no-btn {
-                padding: 15px 35px;
+                padding: 14px 35px;
                 font-size: 1.1rem;
-                min-width: 100px;
+                min-width: 120px;
+            }
+
+            .button-container {
+                gap: 12px;
+                max-width: 320px;
+            }
+
+            .bouquet-image {
+                max-width: 300px;
+            }
+        }
+
+        /* Smaller phones */
+        @media (max-width: 375px) {
+            .puzzle-frame {
+                max-width: 280px;
+            }
+
+            .pieces-container {
+                max-width: 280px;
+            }
+
+            .puzzle-piece {
+                width: 75px;
+                height: 75px;
             }
         }
     </style>
@@ -531,7 +566,7 @@
     <div class="screen" id="screen3">
         <div class="reveal-content" id="revealContent">
             <img src="bouquet.png" alt="Your Valentine's Gift" class="bouquet-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <div style="display:none; padding: 40px; background: white; border-radius: 20px; margin-bottom: 30px;">
+            <div style="display:none; padding: 40px; background: transparent; border-radius: 20px; margin-bottom: 30px;">
                 <p style="font-size: 4rem;">💐</p>
                 <p style="color: #666;">Bouquet of love for you</p>
             </div>
@@ -883,17 +918,14 @@
             const yesIndex = Math.min(noAttempts, yesMessages.length - 1);
             yesBtn.textContent = yesMessages[yesIndex];
 
-            const container = buttonContainer.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
-            
             // Random position within container
-            const maxX = 200;
-            const maxY = 80;
+            const maxX = 150;
+            const maxY = 100;
             
             const randomX = (Math.random() * maxX * 2) - maxX;
             const randomY = (Math.random() * maxY * 2) - maxY;
             
-            noBtn.style.transform = `translate(calc(-100% - 10px + ${randomX}px), ${randomY}px) rotate(${Math.random() * 360}deg) scale(${Math.max(0.3, 1 - noAttempts * 0.1)})`;
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${Math.random() * 360}deg) scale(${Math.max(0.3, 1 - noAttempts * 0.1)})`;
             
             const message = noMessages[Math.min(noAttempts - 1, noMessages.length - 1)];
             teaseMsg.textContent = message;
